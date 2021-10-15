@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".TaskPoolActivity"/>
-        <activity android:name=".base.BaseActivity"/>
+        <activity android:name=".base.BaseActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
     </application>
 
 </manifest>

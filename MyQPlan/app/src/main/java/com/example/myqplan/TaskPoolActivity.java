@@ -36,6 +36,7 @@ public class TaskPoolActivity extends BaseActivity {
     protected void initView() {
         viewPager = findViewById(R.id.task_pool_vp);
         taskPoolNameTv = findViewById(R.id.task_pool_name);
+        getWindow().setBackgroundDrawableResource(R.drawable.midnight);
     }
 
     @Override

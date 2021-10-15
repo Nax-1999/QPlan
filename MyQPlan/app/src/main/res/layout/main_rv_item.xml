@@ -7,11 +7,11 @@
         android:id="@+id/task_pool_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_margin="10dp"
+        android:padding="20dp"
+        android:layout_margin="15dp"
         android:text="任务池"
         android:gravity="center"
-        android:textColor="@color/black"
+        android:textColor="@color/text_color"
         android:background="@drawable/main_rv_bg"/>
 
 </LinearLayout>

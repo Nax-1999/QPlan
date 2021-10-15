@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="任务池"
-        android:textSize="24sp"/>
+        android:textSize="24sp"
+        android:textColor="@color/white"/>
 
     <View
         android:layout_width="match_parent"

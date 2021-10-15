@@ -13,7 +13,8 @@
         android:text="任务池列表"
         android:textSize="24sp"
         android:gravity="center"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        android:textColor="@color/text_color"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_rv"
