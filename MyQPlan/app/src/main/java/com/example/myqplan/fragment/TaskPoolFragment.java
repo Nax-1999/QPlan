@@ -92,6 +92,7 @@ public class TaskPoolFragment extends Fragment {
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                boolean hasFinishTask = false;
                 List<Task> deleteList = new LinkedList<>();
                 //todo 1、删除当前列表内容 (先找出全部完成了的列表项)
                 Iterator<Task> iterator = list.iterator();
@@ -100,8 +101,13 @@ public class TaskPoolFragment extends Fragment {
                     if (task.isFinished()) {
                         deleteList.add(task);
                         iterator.remove();
+                        hasFinishTask = true;
                     }
                     task.setFinished(false);
+                }
+                if (!hasFinishTask) {
+                    Toast.makeText(context, "当前任务池没有已完成的任务项！", Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 //todo 2、更新当前任务池SP内容
                 updateSp();
@@ -153,6 +159,35 @@ public class TaskPoolFragment extends Fragment {
                     //todo 3、更新sp
                     Log.d("TAG", "onClick: 更新后内容：" + sb.toString());
                     SpUtils.addToSp(nextType, sb.toString());
+
+
+                    //逆序展示
+                    /*
+                    //todo 当提交的任务池不是完成池时 (现在改成逆序展示)
+                    //todo 1、获取到next的任务列表
+                    String tasks = SpUtils.getFromSp(nextType);
+                    Log.d("TAG", "onClick: 下一个taskPool内容：" + tasks);
+                    StringBuilder sb = new StringBuilder(tasks);
+
+                    if (!TextUtils.isEmpty(sb.toString())) {
+                        //todo 别忘了处理前面的分隔符！！！
+                        sb = new StringBuilder("&").append(sb);
+                    }
+                    //todo 2、更新列表 （这里的list应当是前一个任务池删除的任务）
+                    for (int i = deleteList.size() - 1; i > 0; i--) {
+                        Task task = deleteList.get(i);
+                        sb = new StringBuilder(task.getName()).append("%").append(task.isFinished()).append("&").append(sb);
+//                        sb.append(task.getName()).append("%").append(task.isFinished()).append("&");
+                    }
+                    Task task = deleteList.get(0);
+//                    sb.append(task.getName()).append("%").append(task.isFinished());
+                    sb = new StringBuilder(task.getName()).append("%").append(task.isFinished()).append(sb);
+
+
+                    //todo 3、更新sp
+                    Log.d("TAG", "onClick: 更新后内容：" + sb.toString());
+                    SpUtils.addToSp(nextType, sb.toString());
+                     */
                 }
 
             }
