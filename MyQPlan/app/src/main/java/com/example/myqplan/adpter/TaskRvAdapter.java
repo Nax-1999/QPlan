@@ -10,10 +10,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myqplan.R;
 import com.example.myqplan.enity.Task;
+import com.example.myqplan.fragment.TaskPoolFragment;
 
 import java.util.List;
 
@@ -23,12 +25,15 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
     private Context context;
     private List<Task> list;
 
+    private TaskPoolFragment parent;
+
     private View view;
 
 
-    public TaskRvAdapter(Context context, List<Task> list) {
+    public TaskRvAdapter(Context context, List<Task> list, Fragment fragment) {
         this.context = context;
         this.list = list;
+        parent = (TaskPoolFragment) fragment;
     }
 
     @NonNull
@@ -58,6 +63,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                     holder.imageView.setBackground(context.getResources().getDrawable(R.drawable.task_item_img_bg));
                     list.get(position).setFinished(false);
                 }
+                parent.updateSp();
             }
         });
     }

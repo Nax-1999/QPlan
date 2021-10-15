@@ -11,7 +11,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.myqplan.base.BaseActivity;
 import com.example.myqplan.cache.TaskPoolCache;
 import com.example.myqplan.constants.Constants;
+import com.example.myqplan.constants.SpConstants;
 import com.example.myqplan.fragment.TaskPoolFragment;
+import com.example.myqplan.utils.KeyBoardUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +30,8 @@ public class TaskPoolActivity extends BaseActivity {
 
     private TextView taskPoolNameTv;
 
+    String currentTaskPool;
+
     @Override
     protected void initView() {
         viewPager = findViewById(R.id.task_pool_vp);
@@ -38,14 +42,18 @@ public class TaskPoolActivity extends BaseActivity {
     protected void initData() {
         index = getIntent().getIntExtra(Constants.MAIN_RV_INDEX, 0);
         taskPoolName = TaskPoolCache.getInstance().getList().get(index).getName();
+
+        //TODO 添加任务fragments
         list = new LinkedList<>();
-        list.add(new TaskPoolFragment());
-        list.add(new TaskPoolFragment());
-        list.add(new TaskPoolFragment());
-        list.add(new TaskPoolFragment());
-        list.add(new TaskPoolFragment());
-        list.add(new TaskPoolFragment());
-        list.add(new TaskPoolFragment());
+        list.add(new TaskPoolFragment(SpConstants.TASK_UNDO));
+        list.add(new TaskPoolFragment(SpConstants.TASK_READY));
+        list.add(new TaskPoolFragment(SpConstants.TASK_EXECUTE));
+        list.add(new TaskPoolFragment(SpConstants.TASK_REVIEW));
+        list.add(new TaskPoolFragment(SpConstants.TASK_FINISHED));
+        list.add(new TaskPoolFragment(SpConstants.TASK_BLOCKED));
+        list.add(new TaskPoolFragment(SpConstants.TASK_PATCH));
+
+
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @NonNull
             @Override
@@ -59,6 +67,9 @@ public class TaskPoolActivity extends BaseActivity {
             }
         });
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            private boolean flag = false;
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -70,6 +81,10 @@ public class TaskPoolActivity extends BaseActivity {
                 taskPoolName = TaskPoolCache.getInstance().getList().get(index).getName();
                 if (!TextUtils.isEmpty(taskPoolName))
                     taskPoolNameTv.setText(taskPoolName);
+
+                list.get(position).initData();
+                list.get(position).initRv();
+                KeyBoardUtils.closeKeyBoard(TaskPoolActivity.this);
             }
 
             @Override
