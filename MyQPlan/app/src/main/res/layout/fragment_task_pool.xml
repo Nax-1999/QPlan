@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:layout_weight="3"
             android:hint="在这里输入新增任务项"
-            android:gravity="center"/>
+            android:layout_gravity="center"/>
         <Button
             android:id="@+id/task_submit_btn"
             android:layout_width="0dp"

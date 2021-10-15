@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Program Projects/Android Projects/MyQPlan/MyQPlan/app/src/main/res/drawable/task_item_img_bg.xml" value="0.13518518518518519" />
+        <entry key="..\:/Program Projects/Android Projects/MyQPlan/MyQPlan/app/src/main/res/drawable/task_item_img_finished_bg.xml" value="0.13518518518518519" />
+        <entry key="..\:/Program Projects/Android Projects/MyQPlan/MyQPlan/app/src/main/res/layout/activity_task_pool.xml" value="0.18432971014492755" />
+        <entry key="..\:/Program Projects/Android Projects/MyQPlan/MyQPlan/app/src/main/res/layout/fragment_task_pool.xml" value="0.18432971014492755" />
+        <entry key="..\:/Program Projects/Android Projects/MyQPlan/MyQPlan/app/src/main/res/layout/task_pool_framgnt_rv_item.xml" value="0.18432971014492755" />
         <entry key="..\:/Program Projects/MyQPlan/app/src/main/res/drawable/main_rv_bg.xml" value="0.24461538461538462" />
         <entry key="..\:/Program Projects/MyQPlan/app/src/main/res/layout/activity_main.xml" value="0.16354166666666667" />
         <entry key="..\:/Program Projects/MyQPlan/app/src/src/main/res/layout/main_rv_item.xml" value="0.19429347826086957" />
