@@ -21,8 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myqplan.R;
 import com.example.myqplan.enity.Task;
 import com.example.myqplan.fragment.TaskPoolFragment;
+import com.example.myqplan.utils.KeyBoardUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 
 public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder> {
@@ -104,6 +106,8 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         list.remove(position);
                         parent.updateSp();
                         parent.initRv();
+                        //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
+                        KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
                     } else
                         flag[0] = true;
 
