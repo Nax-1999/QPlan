@@ -3,7 +3,10 @@ package com.example.myqplan.adpter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,8 +87,28 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             public void afterTextChanged(Editable editable) {
                 Task task = list.get(position);
                 task.setName(holder.editText.getText().toString());
-                //todo 光写到上面这样并不能持久化
                 parent.updateSp();
+            }
+        });
+        final boolean[] flag = {false};
+        holder.editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                Log.d("TAG", "onKey: 键盘事件为：" + keyEvent.getAction() + "i = " + i);
+                //TODO 当item的文本为空且用户点击了删除键时
+
+                if (TextUtils.isEmpty(holder.editText.getText().toString()) && i == KeyEvent.KEYCODE_DEL ) {
+                    if (flag[0]) {
+                        //todo 删除该item： 修改taskList 并且进行SP的写入和rv的重绘
+                        Log.d("TAG", "onKey: 进入删除操作" );
+                        list.remove(position);
+                        parent.updateSp();
+                        parent.initRv();
+                    } else
+                        flag[0] = true;
+
+                }
+                return false;
             }
         });
     }
