@@ -34,7 +34,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initView() {
         recyclerView = findViewById(R.id.main_rv);
-        getWindow().setBackgroundDrawableResource(R.drawable.midnight);
+        getWindow().setBackgroundDrawableResource(R.mipmap.midnight);
 
     }
 

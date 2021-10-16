@@ -84,6 +84,8 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             public void afterTextChanged(Editable editable) {
                 Task task = list.get(position);
                 task.setName(holder.editText.getText().toString());
+                //todo 光写到上面这样并不能持久化
+                parent.updateSp();
             }
         });
     }
