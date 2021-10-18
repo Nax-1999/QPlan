@@ -73,8 +73,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 parent.updateSp();
             }
         });
-
-        holder.editText.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -90,6 +89,17 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 Task task = list.get(position);
                 task.setName(holder.editText.getText().toString());
                 parent.updateSp();
+            }
+        };
+        //解决rv中的item文本被复用机制覆盖的问题
+        holder.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    holder.editText.addTextChangedListener(textWatcher);
+                } else {
+                    holder.editText.removeTextChangedListener(textWatcher);
+                }
             }
         });
         final boolean[] flag = {false};
