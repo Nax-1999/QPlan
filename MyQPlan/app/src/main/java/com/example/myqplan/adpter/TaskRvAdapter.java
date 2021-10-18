@@ -23,6 +23,7 @@ import com.example.myqplan.R;
 import com.example.myqplan.enity.Task;
 import com.example.myqplan.fragment.TaskPoolFragment;
 import com.example.myqplan.utils.KeyBoardUtils;
+import com.example.myqplan.utils.MainHandlerHelper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -127,16 +128,21 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 //todo 回车键新增任务项
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {
                     list.add(new Task("", false));
+                    //todo 不关键盘下面新增就要闪退？？？
                     KeyBoardUtils.closeKeyBoard(parent.getActivity());
                     parent.updateSp();
-                    //todo 需要把焦点交给下一个item
-                    holder.editText.clearFocus();
-                    if (viewHolders.get(position + 1) != null && viewHolders.get(position + 1).editText != null) {
-                        viewHolders.get(position + 1).editText.requestFocus();
-                    } else {
-                        Log.d("TAG", "新的item为空 " );
-                    }
-                    return true;
+                    //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
+                    MainHandlerHelper.getInstance().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (viewHolders.get(position + 1) != null && viewHolders.get(position + 1).editText != null) {
+                                viewHolders.get(position + 1).editText.requestFocus();
+                                KeyBoardUtils.showSoftKeyboard(viewHolders.get(position + 1).editText, parent.getActivity());
+                            } else {
+                                Log.d("TAG", "新的item为空 " );
+                            }
+                        }
+                    }, 200);
                 }
                 return false;
             }
