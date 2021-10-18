@@ -127,10 +127,12 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 }
                 //todo 回车键新增任务项
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {
-                    list.add(new Task("", false));
+                    //回车添加的新的item应当在原itam的下面
+                    list.add(position + 1, new Task("", false));
                     //todo 不关键盘下面新增就要闪退？？？
                     KeyBoardUtils.closeKeyBoard(parent.getActivity());
                     parent.updateSp();
+//                    parent.initRv();
                     //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
                     MainHandlerHelper.getInstance().postDelayed(new Runnable() {
                         @Override
