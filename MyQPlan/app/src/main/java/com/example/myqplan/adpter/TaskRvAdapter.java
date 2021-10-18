@@ -107,6 +107,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             }
         });
         final boolean[] flag = {false};
+        final int index = position;
         holder.editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
@@ -121,9 +122,16 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         parent.initRv();
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
                         KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
+
+//                        if (index > 0 ) {
+//                            //前一个item获取焦点
+//                            Log.d("TAG", "run: delete");
+//                            viewHolders.get(index - 1).editText.requestFocus();
+////                            KeyBoardUtils.showSoftKeyboard(viewHolders.get(index - 1).editText, parent.getActivity());
+//                        }
+
                     } else
                         flag[0] = true;
-
                 }
                 //todo 回车键新增任务项
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {
