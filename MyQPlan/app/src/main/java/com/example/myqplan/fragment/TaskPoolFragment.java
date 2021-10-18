@@ -86,7 +86,6 @@ public class TaskPoolFragment extends Fragment {
                     Toast.makeText(context, "输入框不能为空！", Toast.LENGTH_SHORT).show();
                 }
 
-
             }
         });
         submitBtn.setOnClickListener(new View.OnClickListener() {

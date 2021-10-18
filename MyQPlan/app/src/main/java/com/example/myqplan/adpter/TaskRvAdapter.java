@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,6 +24,7 @@ import com.example.myqplan.enity.Task;
 import com.example.myqplan.fragment.TaskPoolFragment;
 import com.example.myqplan.utils.KeyBoardUtils;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +38,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 
     private View view;
 
+    List<ViewHolder> viewHolders = new LinkedList<>();
 
     public TaskRvAdapter(Context context, List<Task> list, Fragment fragment) {
         this.context = context;
@@ -108,7 +111,6 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 Log.d("TAG", "onKey: 键盘事件为：" + keyEvent.getAction() + "i = " + i);
                 //TODO 当item的文本为空且用户点击了删除键时
-
                 if (TextUtils.isEmpty(holder.editText.getText().toString()) && i == KeyEvent.KEYCODE_DEL ) {
                     if (flag[0]) {
                         //todo 删除该item： 修改taskList 并且进行SP的写入和rv的重绘
@@ -122,9 +124,30 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         flag[0] = true;
 
                 }
+                //todo 回车键新增任务项
+                if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {
+                    list.add(new Task("", false));
+                    KeyBoardUtils.closeKeyBoard(parent.getActivity());
+                    parent.updateSp();
+                    //todo 需要把焦点交给下一个item
+                    holder.editText.clearFocus();
+                    if (viewHolders.get(position + 1) != null && viewHolders.get(position + 1).editText != null) {
+                        viewHolders.get(position + 1).editText.requestFocus();
+                    } else {
+                        Log.d("TAG", "新的item为空 " );
+                    }
+                    return true;
+                }
                 return false;
             }
         });
+        holder.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                return (keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER);
+            }
+        });
+        viewHolders.add(holder);
     }
 
     @Override
