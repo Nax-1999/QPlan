@@ -108,22 +108,23 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
         });
         final boolean[] flag = {false};
         holder.editText.setOnKeyListener(new View.OnKeyListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 Log.d("TAG", "onKey: 键盘事件为：" + keyEvent.getAction() + "i = " + i);
                 //TODO 当item的文本为空且用户点击了删除键时
-                if (TextUtils.isEmpty(holder.editText.getText().toString()) && i == KeyEvent.KEYCODE_DEL ) {
+                if (TextUtils.isEmpty(holder.editText.getText().toString()) && i == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     if (flag[0]) {
                         //todo 删除该item： 修改taskList 并且进行SP的写入和rv的重绘
                         Log.d("TAG", "onKey: 进入删除操作" );
                         list.remove(position);
                         parent.updateSp();
-                        parent.initRv();
+                        parent.getAdapter().notifyDataSetChanged();
+//                        parent.initRv();
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
-                        KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
+//                        KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
                     } else
                         flag[0] = true;
-
                 }
                 //todo 回车键新增任务项
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {

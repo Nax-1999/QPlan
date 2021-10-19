@@ -1,5 +1,6 @@
 package com.example.myqplan.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -48,6 +50,16 @@ public class TaskPoolFragment extends Fragment {
     Activity context;
 
     String taskType;
+
+    TaskRvAdapter adapter;
+
+    public TaskRvAdapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(TaskRvAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     public TaskPoolFragment() {
 
@@ -89,6 +101,7 @@ public class TaskPoolFragment extends Fragment {
             }
         });
         submitBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
                 boolean hasFinishTask = false;
@@ -110,7 +123,8 @@ public class TaskPoolFragment extends Fragment {
                 }
                 //todo 2、更新当前任务池SP内容
                 updateSp();
-                initRv();
+                adapter.notifyDataSetChanged();
+//                initRv();
 
                 //todo 3、写入下一任务池SP内容
                 String nextType = "";
@@ -225,10 +239,13 @@ public class TaskPoolFragment extends Fragment {
         if (recyclerView != null) {
             LinearLayoutManager layoutManager = new LinearLayoutManager(context);
             recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(new TaskRvAdapter(context, list, this));
+            adapter = new TaskRvAdapter(context, list, this);
+            recyclerView.setAdapter(adapter);
+//            recyclerView.setAdapter(new TaskRvAdapter(context, list, this));
         }
     }
 
+    //todo 每次更新数据时，需要把变化内容写入SP
     public void updateSp() {
         if (list == null)
             return;
