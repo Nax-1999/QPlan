@@ -122,7 +122,15 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         parent.getAdapter().notifyDataSetChanged();
 //                        parent.initRv();
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
-//                        KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
+                        KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
+
+                        if (position > 0 ) {
+                            //前一个item获取焦点
+                            Log.d("TAG", "run: delete");
+                            viewHolders.get(position - 1).editText.requestFocus();
+//                            KeyBoardUtils.showSoftKeyboard(viewHolders.get(index - 1).editText, parent.getActivity());
+                        }
+
                     } else
                         flag[0] = true;
                 }
