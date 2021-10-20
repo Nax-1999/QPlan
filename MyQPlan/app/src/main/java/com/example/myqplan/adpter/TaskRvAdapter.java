@@ -122,6 +122,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         parent.updateSp();
 //                        notifyDataSetChanged();
                         notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, list.size());
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
                         if (position > 0) {
                             MainHandlerHelper.getInstance().postDelayed(new Runnable() {
@@ -148,6 +149,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                     parent.updateSp();
 //                    notifyDataSetChanged();
                     notifyItemInserted(position + 1);
+//                    notifyItemRangeChanged(position, list.size());
 //                    getFocusViaPosition(position + 1, true);
                     //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
                     MainHandlerHelper.getInstance().postDelayed(new Runnable() {
