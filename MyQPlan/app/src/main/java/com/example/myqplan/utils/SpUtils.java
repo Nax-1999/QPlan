@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.myqplan.MyApplication;
 
@@ -14,7 +15,9 @@ public class SpUtils {
 
     public static void addToSp(String key, String value) {
         editor.putString(key, value);
-        editor.apply();
+        //会不会是原来这里用了apply导致数据没有立刻更新?
+        boolean flag = editor.commit();
+        Log.d("TAG", "addToSp: 成功" + flag);
     }
 
     public static String getFromSp(String key) {

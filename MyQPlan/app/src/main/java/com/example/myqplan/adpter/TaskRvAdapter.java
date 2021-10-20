@@ -41,6 +41,8 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 
     List<ViewHolder> viewHolders = new LinkedList<>();
 
+    int num = 0;
+
     public TaskRvAdapter(Context context, List<Task> list, Fragment fragment) {
         this.context = context;
         this.list = list;
@@ -63,7 +65,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             holder.imageView.setBackground(context.getResources().getDrawable(R.drawable.task_item_img_finished_bg));
         else
             holder.imageView.setBackground(context.getResources().getDrawable(R.drawable.task_item_img_bg));
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!list.get(position).isFinished()) {
@@ -111,7 +113,6 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                Log.d("TAG", "onKey: 键盘事件为：" + keyEvent.getAction() + "i = " + i);
                 //TODO 当item的文本为空且用户点击了删除键时
                 if (TextUtils.isEmpty(holder.editText.getText().toString()) && i == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     if (flag[0]) {
@@ -119,15 +120,16 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         Log.d("TAG", "onKey: 进入删除操作" );
                         list.remove(position);
                         parent.updateSp();
-                        parent.getAdapter().notifyDataSetChanged();
+//                        notifyDataSetChanged();
+                        notifyItemRemoved(position);
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
                         if (position > 0) {
                             MainHandlerHelper.getInstance().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    parent.getAdapter().getFocusViaPosition(position - 1);
+                                    getFocusViaPosition(position - 1, false);
                                 }
-                            }, 150);
+                            }, 300);
                         }
                         flag[0] = false;
                     } else {
@@ -136,23 +138,31 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 
                 }
                 //todo 回车键新增任务项
-                if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {
+//                Log.d("TAG", "文本为: "  + viewHolders.get(position).editText.getText().toString());
+                Log.d("TAG", "游标位置：" + viewHolders.get(position).editText.getSelectionEnd() + "    文本长度 = " + viewHolders.get(position).editText.getText().toString().length());
+//                && viewHolders.get(position).editText.getSelectionEnd() == viewHolders.get(position).editText.getText().toString().length()
+                if (i == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP ) {
                     list.add(new Task("", false));
                     //todo 不关键盘下面新增就要闪退？？？
-                    KeyBoardUtils.closeKeyBoard(parent.getActivity());
+//                    KeyBoardUtils.closeKeyBoard(parent.getActivity());
                     parent.updateSp();
+//                    notifyDataSetChanged();
+                    notifyItemInserted(position + 1);
+//                    getFocusViaPosition(position + 1, true);
                     //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
                     MainHandlerHelper.getInstance().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (viewHolders.get(position + 1) != null && viewHolders.get(position + 1).editText != null) {
-                                viewHolders.get(position + 1).editText.requestFocus();
-                                KeyBoardUtils.showSoftKeyboard(viewHolders.get(position + 1).editText, parent.getActivity());
-                            } else {
-                                Log.d("TAG", "新的item为空 " );
-                            }
+//                            if (viewHolders.get(position + 1) != null && viewHolders.get(position + 1).editText != null) {
+//                                viewHolders.get(position + 1).editText.requestFocus();
+//                                KeyBoardUtils.showSoftKeyboard(viewHolders.get(position + 1).editText, parent.getActivity());
+//                            } else {
+//                                Log.d("TAG", "新的item为空 " );
+//                            }
+//                            getFocusViaPosition(position + 1, true);
+                            getFocusViaPosition(position + 1, true);
                         }
-                    }, 200);
+                    }, 300);
                 }
                 return false;
             }
@@ -163,6 +173,8 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 return (keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER);
             }
         });
+        num++;
+        Log.d("TAG1", "调用了一次onBindViewHolder: " + num);
         viewHolders.add(holder);
     }
 
@@ -185,9 +197,18 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
         }
     }
 
-    public void getFocusViaPosition(int position) {
-        viewHolders.get(position).editText.requestFocus();
-        viewHolders.get(position).editText.setSelection(viewHolders.get(position).editText.getText().toString().length());
+    //todo 需要控制这个方法的执行在rv的adapter的刷新之后
+    //fixme 为什么有时候打印的position没错，但实际插入的position不对呢？
+    public void getFocusViaPosition(int position, boolean cursorAtStart) {
+        Log.d("TAG", "将要获得光标的position为: " + position);
+
+        if (!cursorAtStart)
+            viewHolders.get(position).editText.setSelection(viewHolders.get(position).editText.getText().toString().length());
+        else
+            viewHolders.get(position).editText.requestFocus();
 //        KeyBoardUtils.showSoftKeyboard(viewHolders.get(position).editText, context);
     }
+
+
+
 }
