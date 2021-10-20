@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".TaskPoolActivity"/>
         <activity android:name=".base.BaseActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            />
     </application>
 
 </manifest>

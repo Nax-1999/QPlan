@@ -130,9 +130,12 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                             viewHolders.get(position - 1).editText.requestFocus();
 //                            KeyBoardUtils.showSoftKeyboard(viewHolders.get(index - 1).editText, parent.getActivity());
                         }
-
-                    } else
+                        flag[0] = false;
+                    } else {
                         flag[0] = true;
+//                        viewHolders.get(position - 1).editText.requestFocus();
+                    }
+
                 }
                 //todo 回车键新增任务项
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP && i == KeyEvent.KEYCODE_ENTER) {
