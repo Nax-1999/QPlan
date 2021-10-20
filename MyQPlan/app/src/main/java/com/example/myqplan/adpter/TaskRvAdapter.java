@@ -60,6 +60,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        final boolean[] flag = {false};
         holder.editText.setText(list.get(position).getName());
         if (list.get(position).isFinished())
             holder.imageView.setBackground(context.getResources().getDrawable(R.drawable.task_item_img_finished_bg));
@@ -82,7 +83,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+//                flag[0] = TextUtils.isEmpty(holder.editText.getText().toString());
             }
 
             @Override
@@ -95,6 +96,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 Task task = list.get(position);
                 task.setName(holder.editText.getText().toString());
                 parent.updateSp();
+                flag[0] = TextUtils.isEmpty(holder.editText.getText().toString());
             }
         };
         //解决rv中的item文本被复用机制覆盖的问题
@@ -108,14 +110,14 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                 }
             }
         });
-        final boolean[] flag = {false};
+
         holder.editText.setOnKeyListener(new View.OnKeyListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 //TODO 当item的文本为空且用户点击了删除键时
                 if (TextUtils.isEmpty(holder.editText.getText().toString()) && i == KeyEvent.KEYCODE_DEL && keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                    if (flag[0]) {
+                    if (!flag[0]) {
                         //todo 删除该item： 修改taskList 并且进行SP的写入和rv的重绘
                         Log.d("TAG", "onKey: 进入删除操作" );
                         list.remove(position);
@@ -132,9 +134,9 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                                 }
                             }, 300);
                         }
-                        flag[0] = false;
-                    } else {
                         flag[0] = true;
+                    } else {
+                        flag[0] = false;
                     }
 
                 }
@@ -144,13 +146,14 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 //                && viewHolders.get(position).editText.getSelectionEnd() == viewHolders.get(position).editText.getText().toString().length()
                 if (i == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP
                         && viewHolders.get(position).editText.getSelectionStart() == viewHolders.get(position).editText.getText().toString().length()) {
-                    list.add(new Task("", false));
+                    //FIXME 这里默认往末尾加载了
+                    list.add(position + 1, new Task("", false));
                     //todo 不关键盘下面新增就要闪退？？？
 //                    KeyBoardUtils.closeKeyBoard(parent.getActivity());
                     parent.updateSp();
 //                    notifyDataSetChanged();
                     notifyItemInserted(position + 1);
-//                    notifyItemRangeChanged(position, list.size());
+                    notifyItemRangeChanged(position + 1, list.size() + 1);
 //                    getFocusViaPosition(position + 1, true);
                     //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
                     MainHandlerHelper.getInstance().postDelayed(new Runnable() {
