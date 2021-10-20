@@ -142,7 +142,8 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 //                Log.d("TAG", "文本为: "  + viewHolders.get(position).editText.getText().toString());
                 Log.d("TAG", "游标位置：" + viewHolders.get(position).editText.getSelectionEnd() + "    文本长度 = " + viewHolders.get(position).editText.getText().toString().length());
 //                && viewHolders.get(position).editText.getSelectionEnd() == viewHolders.get(position).editText.getText().toString().length()
-                if (i == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP ) {
+                if (i == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP
+                        && viewHolders.get(position).editText.getSelectionStart() == viewHolders.get(position).editText.getText().toString().length()) {
                     list.add(new Task("", false));
                     //todo 不关键盘下面新增就要闪退？？？
 //                    KeyBoardUtils.closeKeyBoard(parent.getActivity());
