@@ -120,20 +120,18 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         list.remove(position);
                         parent.updateSp();
                         parent.getAdapter().notifyDataSetChanged();
-//                        parent.initRv();
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
-                        KeyBoardUtils.closeKeyBoard(Objects.requireNonNull(parent.getActivity()));
-
-                        if (position > 0 ) {
-                            //前一个item获取焦点
-                            Log.d("TAG", "run: delete");
-                            viewHolders.get(position - 1).editText.requestFocus();
-//                            KeyBoardUtils.showSoftKeyboard(viewHolders.get(index - 1).editText, parent.getActivity());
+                        if (position > 0) {
+                            MainHandlerHelper.getInstance().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    parent.getAdapter().getFocusViaPosition(position - 1);
+                                }
+                            }, 150);
                         }
                         flag[0] = false;
                     } else {
                         flag[0] = true;
-//                        viewHolders.get(position - 1).editText.requestFocus();
                     }
 
                 }
@@ -185,5 +183,11 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
             editText = itemView.findViewById(R.id.task_content);
             linearLayout = itemView.findViewById(R.id.task_item_ll);
         }
+    }
+
+    public void getFocusViaPosition(int position) {
+        viewHolders.get(position).editText.requestFocus();
+        viewHolders.get(position).editText.setSelection(viewHolders.get(position).editText.getText().toString().length());
+//        KeyBoardUtils.showSoftKeyboard(viewHolders.get(position).editText, context);
     }
 }
