@@ -265,4 +265,8 @@ public class TaskPoolFragment extends Fragment {
         SpUtils.addToSp(taskType, sb.toString());
     }
 
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
+
 }

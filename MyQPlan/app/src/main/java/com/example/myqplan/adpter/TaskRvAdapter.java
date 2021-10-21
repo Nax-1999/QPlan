@@ -154,6 +154,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 //                    notifyDataSetChanged();
                     notifyItemInserted(position + 1);
                     notifyItemRangeChanged(position + 1, list.size() + 1);
+                    parent.getRecyclerView().scrollToPosition(list.size() - 1);
 //                    getFocusViaPosition(position + 1, true);
                     //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
                     MainHandlerHelper.getInstance().postDelayed(new Runnable() {
@@ -166,7 +167,9 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 //                                Log.d("TAG", "新的item为空 " );
 //                            }
 //                            getFocusViaPosition(position + 1, true);
-                            getFocusViaPosition(position + 1, true);
+//                             getFocusViaPosition(holder.getAdapterPosition() + 1, true);
+                             getFocusViaPosition(position + 1, true);
+//                            parent.getRecyclerView().scrollToPosition(position + 1);
                         }
                     }, 300);
                 }
@@ -206,12 +209,21 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
     //todo 需要控制这个方法的执行在rv的adapter的刷新之后
     //fixme 为什么有时候打印的position没错，但实际插入的position不对呢？
     public void getFocusViaPosition(int position, boolean cursorAtStart) {
+//        position = Math.min(position, viewHolders.size() - 1);
         Log.d("TAG", "将要获得光标的position为: " + position);
-
+        Log.d("TAG", "当前list的长度: " + list.size());
+        Log.d("TAG", "ViewHolder的数目: " + viewHolders.size());
         if (!cursorAtStart)
             viewHolders.get(position).editText.setSelection(viewHolders.get(position).editText.getText().toString().length());
-        else
+        else {
+            //todo 新增item时先把rv拉到底部
+//            parent.getRecyclerView().scrollToPosition(position);
+
+            position = Math.min(position, viewHolders.size() - 1);
             viewHolders.get(position).editText.requestFocus();
+//            parent.getRecyclerView().scrollToPosition(list.size() - 1);
+        }
+
 //        KeyBoardUtils.showSoftKeyboard(viewHolders.get(position).editText, context);
     }
 
