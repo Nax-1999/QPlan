@@ -122,9 +122,10 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                         Log.d("TAG", "onKey: 进入删除操作" );
                         list.remove(position);
                         parent.updateSp();
-//                        notifyDataSetChanged();
+//                        notifyDataSetChanged();  改用下面的方法解决超出屏幕时的闪退问题
                         notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, list.size());
+                        //fixme 好像这里原来传了position-1，导致删除后光标显示在开头... 现在把后面那个也从list.size() - 1改成了position
+                        notifyItemRangeChanged(position, position);
                         //todo 删除完时应该关闭软键盘或自动选中上一个item的输入框
                         if (position > 0) {
                             MainHandlerHelper.getInstance().postDelayed(new Runnable() {
@@ -153,9 +154,14 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
                     parent.updateSp();
 //                    notifyDataSetChanged();
                     notifyItemInserted(position + 1);
-                    notifyItemRangeChanged(position + 1, list.size() + 1);
-                    parent.getRecyclerView().scrollToPosition(list.size() - 1);
-//                    getFocusViaPosition(position + 1, true);
+                    //TODO 把下面的第二个参数从list.size() + 1 改成了position + 1
+//                    int num = Math.min(position + 2, list.size());
+
+                    //如果这里不notify，那么新增的项就不会被adapter记入position
+                    notifyItemRangeChanged(position + 1, position + 1);
+
+//                    parent.getRecyclerView().scrollToPosition(list.size() - 1);//fixme 解决新增item超出布局时的崩溃
+                    parent.getRecyclerView().scrollToPosition(position + 1);
                     //todo 需要把焦点交给下一个item   这里的更新需要设置一个延迟（不然会因为太早调用闪退）
                     MainHandlerHelper.getInstance().postDelayed(new Runnable() {
                         @Override
@@ -168,6 +174,7 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
 //                            }
 //                            getFocusViaPosition(position + 1, true);
 //                             getFocusViaPosition(holder.getAdapterPosition() + 1, true);
+//                             getFocusViaPosition(position + 1, true);
                              getFocusViaPosition(position + 1, true);
 //                            parent.getRecyclerView().scrollToPosition(position + 1);
                         }
@@ -209,22 +216,40 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
     //todo 需要控制这个方法的执行在rv的adapter的刷新之后
     //fixme 为什么有时候打印的position没错，但实际插入的position不对呢？
     public void getFocusViaPosition(int position, boolean cursorAtStart) {
-//        position = Math.min(position, viewHolders.size() - 1);
         Log.d("TAG", "将要获得光标的position为: " + position);
         Log.d("TAG", "当前list的长度: " + list.size());
         Log.d("TAG", "ViewHolder的数目: " + viewHolders.size());
+        EditText et = viewHolders.get(position).editText;
+//        position = Math.min(position, viewHolders.size() - 1);
         if (!cursorAtStart)
-            viewHolders.get(position).editText.setSelection(viewHolders.get(position).editText.getText().toString().length());
+            et.setSelection(et.getText().toString().length());
         else {
             //todo 新增item时先把rv拉到底部
 //            parent.getRecyclerView().scrollToPosition(position);
 
             position = Math.min(position, viewHolders.size() - 1);
-            viewHolders.get(position).editText.requestFocus();
+            et = viewHolders.get(position).editText;
+            et.requestFocus();
+
 //            parent.getRecyclerView().scrollToPosition(list.size() - 1);
         }
 
-//        KeyBoardUtils.showSoftKeyboard(viewHolders.get(position).editText, context);
+//        et.requestFocus();
+//        if (!cursorAtStart) {
+//            Log.d("TAG", "当前操作是删除item ");
+//            MainHandlerHelper.getInstance().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (et.isFocused()) {
+//                        Log.d("TAG", "删除项的前一项已获得焦点 ");
+//                        int index = et.getText().toString().length();
+//                          //这种方式会闪，而且会丢失焦点
+//                        et.setSelection(index);
+//                    }
+//                }
+//            },1000);
+//        }
+
     }
 
 
