@@ -1,10 +1,14 @@
 package com.example.myqplan;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -14,9 +18,11 @@ import com.example.myqplan.base.BaseActivity;
 import com.example.myqplan.cache.TaskPoolCache;
 import com.example.myqplan.constants.SpConstants;
 import com.example.myqplan.enity.TaskPool;
+import com.example.myqplan.utils.MyItemTouchHelper;
 import com.example.myqplan.utils.SpUtils;
 
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,6 +31,10 @@ public class MainActivity extends BaseActivity {
     private RecyclerView recyclerView;
 
     private List<TaskPool> taskPools;
+
+    RecyclerView.Adapter adapter;
+
+    ItemTouchHelper helper;
 
     @Override
     protected void getContent() {
@@ -35,7 +45,6 @@ public class MainActivity extends BaseActivity {
     protected void initView() {
         recyclerView = findViewById(R.id.main_rv);
         getWindow().setBackgroundDrawableResource(R.mipmap.midnight);
-
     }
 
     @Override
@@ -78,7 +87,58 @@ public class MainActivity extends BaseActivity {
         TaskPoolCache.getInstance().setList(taskPools);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new MainRvAdapter(MainActivity.this, taskPools));
+        adapter = new MainRvAdapter(MainActivity.this, taskPools);
+        recyclerView.setAdapter(adapter);
+
+//        setHelper();
+    }
+
+    private void setHelper() {
+        helper = new MyItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                final int swipeFlags = 0;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int pre = viewHolder.getAdapterPosition();
+                int cur = target.getAdapterPosition();
+                if (pre < cur) {
+                    for (int i = pre; i < cur ; i++) {
+                        Collections.swap(taskPools, i, i + 1);
+                    }
+                } else {
+                    for (int i = pre; i > cur; i--) {
+                        Collections.swap(taskPools, i, i - 1);
+                    }
+                }
+                adapter.notifyItemMoved(pre, cur);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                viewHolder.itemView.setBackgroundColor(0);
+            }
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+                    viewHolder.itemView.setBackgroundColor(Color.GRAY);
+                }
+                super.onSelectedChanged(viewHolder, actionState);
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
     }
 
 }

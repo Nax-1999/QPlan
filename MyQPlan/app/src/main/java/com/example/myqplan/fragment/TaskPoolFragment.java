@@ -3,11 +3,13 @@ package com.example.myqplan.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,8 +31,10 @@ import com.example.myqplan.adpter.TaskRvAdapter;
 import com.example.myqplan.constants.SpConstants;
 import com.example.myqplan.enity.Task;
 import com.example.myqplan.utils.KeyBoardUtils;
+import com.example.myqplan.utils.MyItemTouchHelper;
 import com.example.myqplan.utils.SpUtils;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,16 +61,19 @@ public class TaskPoolFragment extends Fragment {
         return adapter;
     }
 
+    MyItemTouchHelper helper;
+
     public void setAdapter(TaskRvAdapter adapter) {
         this.adapter = adapter;
     }
 
-    public TaskPoolFragment() {
-
-    }
+//    public TaskPoolFragment() {
+//
+//    }
 
     public TaskPoolFragment(String taskType) {
         this.taskType = taskType;
+
     }
 
     @Override
@@ -84,6 +91,7 @@ public class TaskPoolFragment extends Fragment {
         addBtn = view.findViewById(R.id.task_add_btn);
         submitBtn = view.findViewById(R.id.task_submit_btn);
         recyclerView = view.findViewById(R.id.task_rv);
+        setHelper();
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -243,6 +251,55 @@ public class TaskPoolFragment extends Fragment {
             recyclerView.setAdapter(adapter);
 //            recyclerView.setAdapter(new TaskRvAdapter(context, list, this));
         }
+    }
+
+    private void setHelper() {
+        helper = new MyItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                final int swipeFlags = 0;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int pre = viewHolder.getAdapterPosition();
+                int cur = target.getAdapterPosition();
+                if (pre < cur) {
+                    for (int i = pre; i < cur ; i++) {
+                        Collections.swap(list, i, i + 1);
+                    }
+                } else {
+                    for (int i = pre; i > cur; i--) {
+                        Collections.swap(list, i, i - 1);
+                    }
+                }
+                adapter.notifyItemMoved(pre, cur);
+                updateSp();
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                viewHolder.itemView.setBackgroundColor(0);
+            }
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+                    viewHolder.itemView.setBackgroundColor(Color.GRAY);
+                }
+                super.onSelectedChanged(viewHolder, actionState);
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
     }
 
     //todo 每次更新数据时，需要把变化内容写入SP
