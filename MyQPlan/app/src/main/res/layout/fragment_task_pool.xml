@@ -17,11 +17,20 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:hint="在这里输入新增任务项"
+            android:hint="在此输入新任务"
             android:background="@null"
             android:layout_gravity="center"
             android:textColorHint="@color/gray"
             android:textColor="@color/white"/>
+        <Button
+            android:visibility="gone"
+            android:id="@+id/task_reset_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:layout_margin="3dp"
+            android:text="重置"/>
         <Button
             android:id="@+id/task_add_btn"
             android:layout_width="0dp"
@@ -38,6 +47,7 @@
             android:textSize="16sp"
             android:layout_margin="3dp"
             android:text="提交"/>
+
 
     </LinearLayout>
     <View

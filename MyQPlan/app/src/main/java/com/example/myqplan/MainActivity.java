@@ -55,6 +55,7 @@ public class MainActivity extends BaseActivity {
         SharedPreferences.Editor editor = sp.edit();
         String poolsName = sp.getString(SpConstants.TASK_POOL_NAMES, "");
         if (TextUtils.isEmpty(poolsName)) {
+            TaskPool taskPool0 = new TaskPool("每日任务池");
             TaskPool taskPool1 = new TaskPool("任务待办池");
             TaskPool taskPool2 = new TaskPool("任务就绪池");
             TaskPool taskPool3 = new TaskPool("任务执行池");
@@ -62,6 +63,7 @@ public class MainActivity extends BaseActivity {
             TaskPool taskPool5 = new TaskPool("任务完成池");
             TaskPool taskPool6 = new TaskPool("任务阻塞池");
             TaskPool taskPool7 = new TaskPool("碎片任务池");
+            taskPools.add(taskPool0);
             taskPools.add(taskPool1);
             taskPools.add(taskPool2);
             taskPools.add(taskPool3);

@@ -45,6 +45,7 @@ public class TaskPoolFragment extends Fragment {
     private EditText editText;
     private Button addBtn;
     private Button submitBtn;
+//    private Button resetBtn;
     private RecyclerView recyclerView;
 
     List<Task> list;
@@ -90,8 +91,14 @@ public class TaskPoolFragment extends Fragment {
         editText = view.findViewById(R.id.task_name_et);
         addBtn = view.findViewById(R.id.task_add_btn);
         submitBtn = view.findViewById(R.id.task_submit_btn);
+//        resetBtn = view.findViewById(R.id.task_reset_btn);
         recyclerView = view.findViewById(R.id.task_rv);
         setHelper();
+        if (taskType == SpConstants.TASK_DAILY) {
+            submitBtn.setText("重置");
+        } else if (taskType == SpConstants.TASK_FINISHED) {
+            submitBtn.setText("清除");
+        }
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,6 +119,26 @@ public class TaskPoolFragment extends Fragment {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
+                if (taskType.equals(SpConstants.TASK_DAILY)) {
+                    for (int i = 0; i < list.size(); i++) {
+                        list.get(i).setFinished(false);
+                    }
+                    updateSp();
+                    //
+//                    adapter.notifyDataSetChanged();
+                    initRv();
+                    return;
+//                    StringBuilder sb = new StringBuilder();
+//                    for (int i = 0; i < list.size() - 1; i++) {
+//                        Task task = list.get(i);
+//                        sb.append(task.getName()).append("%").append(task.isFinished());
+//                        sb.append("&");
+//                    }
+//                    Task task = list.get(list.size() - 1);
+//                    sb.append(task.getName()).append("%").append(task.isFinished());
+//                    SpUtils.addToSp(SpConstants.TASK_DAILY, sb.toString());
+//                    return;
+                }
                 boolean hasFinishTask = false;
                 List<Task> deleteList = new LinkedList<>();
                 //todo 1、删除当前列表内容 (先找出全部完成了的列表项)
@@ -137,6 +164,9 @@ public class TaskPoolFragment extends Fragment {
                 //todo 3、写入下一任务池SP内容
                 String nextType = "";
                 switch (taskType) {
+                    case SpConstants.TASK_DAILY:
+                        nextType = SpConstants.TASK_DAILY_NEXT;
+                        break;
                     case SpConstants.TASK_UNDO:
                         nextType = SpConstants.TASK_UNDO_NEXT;
                         break;
@@ -159,7 +189,7 @@ public class TaskPoolFragment extends Fragment {
                         nextType = SpConstants.TASK_PATCH_NEXT;
                         break;
                 }
-                if (!nextType.equals(SpConstants.TASK_FINISHED_NEXT)) {
+                if (!nextType.equals(SpConstants.TASK_FINISHED_NEXT) && !nextType.equals(SpConstants.TASK_DAILY_NEXT)) {
                     //todo 当提交的任务池不是完成池时
                     //todo 1、获取到next的任务列表
                     String tasks = SpUtils.getFromSp(nextType);
@@ -213,6 +243,12 @@ public class TaskPoolFragment extends Fragment {
 
             }
         });
+//        resetBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
         initData();
         initRv();

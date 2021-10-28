@@ -46,6 +46,7 @@ public class TaskPoolActivity extends BaseActivity {
 
         //TODO 添加任务fragments
         list = new LinkedList<>();
+        list.add(new TaskPoolFragment(SpConstants.TASK_DAILY));
         list.add(new TaskPoolFragment(SpConstants.TASK_UNDO));
         list.add(new TaskPoolFragment(SpConstants.TASK_READY));
         list.add(new TaskPoolFragment(SpConstants.TASK_EXECUTE));
