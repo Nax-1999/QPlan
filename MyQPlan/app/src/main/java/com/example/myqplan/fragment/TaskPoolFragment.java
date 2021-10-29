@@ -24,17 +24,23 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myqplan.R;
+import com.example.myqplan.TaskPoolActivity;
 import com.example.myqplan.adpter.TaskRvAdapter;
 import com.example.myqplan.constants.SpConstants;
 import com.example.myqplan.enity.Task;
+import com.example.myqplan.enity.TaskPool;
 import com.example.myqplan.utils.KeyBoardUtils;
+import com.example.myqplan.utils.MainHandlerHelper;
 import com.example.myqplan.utils.MyItemTouchHelper;
 import com.example.myqplan.utils.SpUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +51,7 @@ public class TaskPoolFragment extends Fragment {
     private EditText editText;
     private Button addBtn;
     private Button submitBtn;
+    private TextView updateTimeTv;
 //    private Button resetBtn;
     private RecyclerView recyclerView;
 
@@ -55,6 +62,16 @@ public class TaskPoolFragment extends Fragment {
     Activity context;
 
     String taskType;
+
+    TaskPool taskPool;
+
+    public TaskPool getTaskPool() {
+        return taskPool;
+    }
+
+    public void setTaskPool(TaskPool taskPool) {
+        this.taskPool = taskPool;
+    }
 
     TaskRvAdapter adapter;
 
@@ -97,6 +114,7 @@ public class TaskPoolFragment extends Fragment {
         submitBtn = view.findViewById(R.id.task_submit_btn);
 //        resetBtn = view.findViewById(R.id.task_reset_btn);
         recyclerView = view.findViewById(R.id.task_rv);
+        updateTimeTv = view.findViewById(R.id.last_update_time);
         setHelper();
         if (taskType.equals(SpConstants.TASK_DAILY)) {
             submitBtn.setText("重置");
@@ -285,7 +303,22 @@ public class TaskPoolFragment extends Fragment {
                 list.add(new Task(s[0], Boolean.parseBoolean(s[1])));
             }
         }
+        initDate();
+    }
 
+    private void initDate() {
+        long time = taskPool.getUpdateTime();
+//        long time = System.currentTimeMillis();
+        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String retStrFormatNowDate = sdFormatter.format(time);
+
+//        updateTimeTv.setText("最近更新时间:" + retStrFormatNowDate);
+        MainHandlerHelper.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateTimeTv.setText("最近更新时间:" + retStrFormatNowDate);
+            }
+        });
     }
 
     public void initRv() {
@@ -345,6 +378,7 @@ public class TaskPoolFragment extends Fragment {
             }
         });
         helper.attachToRecyclerView(recyclerView);
+
     }
 
     //todo 每次更新数据时，需要把变化内容写入SP
@@ -365,6 +399,13 @@ public class TaskPoolFragment extends Fragment {
         sb.append(task.getName()).append("%").append(task.isFinished());
         //todo 其实sp的apply可以在离开页面时提交？
         SpUtils.addToSp(taskType, sb.toString());
+
+        //todo 更新当前taskPool的更新时间  （initDate之前要把当前的taskPool的date先给变了...）
+        long time = System.currentTimeMillis();
+        TaskPoolActivity activity = (TaskPoolActivity) context;
+        activity.updateSp(taskType, time);
+        taskPool.setUpdateTime(time);
+        initDate();
     }
 
     public RecyclerView getRecyclerView() {

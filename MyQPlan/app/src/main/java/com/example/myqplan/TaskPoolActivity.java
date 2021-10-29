@@ -12,6 +12,7 @@ import com.example.myqplan.base.BaseActivity;
 import com.example.myqplan.cache.TaskPoolCache;
 import com.example.myqplan.constants.Constants;
 import com.example.myqplan.constants.SpConstants;
+import com.example.myqplan.enity.TaskPool;
 import com.example.myqplan.fragment.TaskPoolFragment;
 import com.example.myqplan.utils.KeyBoardUtils;
 import com.example.myqplan.utils.SpUtils;
@@ -50,7 +51,11 @@ public class TaskPoolActivity extends BaseActivity {
         if (!TextUtils.isEmpty(s)) {
             String[] pools = s.split("&");
             for (String str : pools) {
-                list.add(new TaskPoolFragment(str));
+                String[] strings = str.split("%");
+                TaskPoolFragment fragment = new TaskPoolFragment(strings[0]);
+                TaskPool taskPool = new TaskPool(strings[0], Long.parseLong(strings[1]));
+                fragment.setTaskPool(taskPool);
+                list.add(fragment);
             }
         }
         //TODO 添加任务fragments
@@ -108,6 +113,33 @@ public class TaskPoolActivity extends BaseActivity {
         if (!TextUtils.isEmpty(taskPoolName))
             taskPoolNameTv.setText(taskPoolName);
 
+    }
+
+    public void updateSp(String taskType, long time) {
+        if (list == null)
+            return;
+        //todo 把新添加的项写入sp
+        StringBuilder sb = new StringBuilder();
+        if (list.size() == 0) {
+            SpUtils.addToSp(SpConstants.TASK_POOL_NAMES, "");
+            return;
+        }
+        for (int i = 0; i < list.size() - 1; i++) {
+            TaskPool taskPool = list.get(i).getTaskPool();
+            if (taskType.equals(taskPool.getName()))
+                sb.append(taskPool.getName()).append("%").append(time).append("&");
+            else {
+                sb.append(taskPool.getName()).append("%").append(taskPool.getUpdateTime()).append("&");
+            }
+        }
+        TaskPool taskPool = list.get(list.size() - 1).getTaskPool();
+        if (taskType.equals(taskPool.getName()))
+            sb.append(taskPool.getName()).append("%").append(time);
+        else
+            sb.append(taskPool.getName()).append("%").append(taskPool.getUpdateTime());
+
+        //todo 其实sp的apply可以在离开页面时提交？
+        SpUtils.addToSp(SpConstants.TASK_POOL_NAMES, sb.toString());
     }
 
     @Override

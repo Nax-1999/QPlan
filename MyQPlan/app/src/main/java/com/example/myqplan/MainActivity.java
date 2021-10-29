@@ -55,16 +55,16 @@ public class MainActivity extends BaseActivity {
         SpUtils.setSp(this);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sp.edit();
-        String poolsName = sp.getString(SpConstants.TASK_POOL_NAMES, "");
-        if (TextUtils.isEmpty(poolsName)) {
-            TaskPool taskPool0 = new TaskPool("每日任务池");
-            TaskPool taskPool1 = new TaskPool("任务待办池");
-            TaskPool taskPool2 = new TaskPool("任务就绪池");
-            TaskPool taskPool3 = new TaskPool("任务执行池");
-            TaskPool taskPool4 = new TaskPool("任务回顾池");
-            TaskPool taskPool5 = new TaskPool("任务完成池");
-            TaskPool taskPool6 = new TaskPool("任务阻塞池");
-            TaskPool taskPool7 = new TaskPool("碎片任务池");
+        String pools = sp.getString(SpConstants.TASK_POOL_NAMES, "");
+        if (TextUtils.isEmpty(pools)) {
+            TaskPool taskPool0 = new TaskPool("每日任务池", System.currentTimeMillis());
+            TaskPool taskPool1 = new TaskPool("任务待办池", System.currentTimeMillis());
+            TaskPool taskPool2 = new TaskPool("任务就绪池", System.currentTimeMillis());
+            TaskPool taskPool3 = new TaskPool("任务执行池", System.currentTimeMillis());
+            TaskPool taskPool4 = new TaskPool("任务回顾池", System.currentTimeMillis());
+            TaskPool taskPool5 = new TaskPool("任务完成池", System.currentTimeMillis());
+            TaskPool taskPool6 = new TaskPool("任务阻塞池", System.currentTimeMillis());
+            TaskPool taskPool7 = new TaskPool("碎片任务池", System.currentTimeMillis());
             taskPools.add(taskPool0);
             taskPools.add(taskPool1);
             taskPools.add(taskPool2);
@@ -75,15 +75,16 @@ public class MainActivity extends BaseActivity {
             taskPools.add(taskPool7);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < taskPools.size() - 1; i++) {
-                sb.append(taskPools.get(i).getName()).append("&");
+                sb.append(taskPools.get(i).getName()).append("%").append(taskPools.get(i).getUpdateTime()).append("&");
             }
-            sb.append(taskPools.get(taskPools.size() - 1).getName());
+            sb.append(taskPools.get(taskPools.size() - 1).getName()).append("%").append(taskPools.get(taskPools.size() - 1).getUpdateTime());
             editor.putString(SpConstants.TASK_POOL_NAMES, sb.toString());
             editor.apply();
         } else {
-            String[] strings = poolsName.split("&");
+            String[] strings = pools.split("&");
             for (int i = 0; i < strings.length; i++) {
-                TaskPool taskPool = new TaskPool(strings[i]);
+                String[] temp = strings[i].split("%");
+                TaskPool taskPool = new TaskPool(temp[0], Long.parseLong(temp[1]));
                 taskPools.add(taskPool);
             }
         }
@@ -167,12 +168,18 @@ public class MainActivity extends BaseActivity {
             SpUtils.addToSp(SpConstants.TASK_POOL_NAMES, "");
             return;
         }
+//        for (int i = 0; i < taskPools.size() - 1; i++) {
+//            TaskPool taskPool = taskPools.get(i);
+//            sb.append(taskPool.getName()).append("&");
+//        }
+//        TaskPool taskPool = taskPools.get(taskPools.size() - 1);
+//        sb.append(taskPool.getName());
+
         for (int i = 0; i < taskPools.size() - 1; i++) {
-            TaskPool taskPool = taskPools.get(i);
-            sb.append(taskPool.getName()).append("&");
+            sb.append(taskPools.get(i).getName()).append("%").append(taskPools.get(i).getUpdateTime()).append("&");
         }
-        TaskPool taskPool = taskPools.get(taskPools.size() - 1);
-        sb.append(taskPool.getName());
+        sb.append(taskPools.get(taskPools.size() - 1).getName()).append("%").append(taskPools.get(taskPools.size() - 1).getUpdateTime());
+
         //todo 其实sp的apply可以在离开页面时提交？
         SpUtils.addToSp(SpConstants.TASK_POOL_NAMES, sb.toString());
     }

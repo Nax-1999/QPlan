@@ -55,6 +55,14 @@
         android:layout_height="1dp"
         android:layout_marginTop="2dp"
         android:background="@color/soft_gray"/>
+    <TextView
+        android:id="@+id/last_update_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="最近更新时间："
+        android:gravity="center"
+        android:textColor="@color/gray"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="5dp"
         android:id="@+id/task_rv"
