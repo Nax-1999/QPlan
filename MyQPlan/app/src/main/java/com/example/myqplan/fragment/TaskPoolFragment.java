@@ -98,9 +98,9 @@ public class TaskPoolFragment extends Fragment {
 //        resetBtn = view.findViewById(R.id.task_reset_btn);
         recyclerView = view.findViewById(R.id.task_rv);
         setHelper();
-        if (taskType == SpConstants.TASK_DAILY) {
+        if (taskType.equals(SpConstants.TASK_DAILY)) {
             submitBtn.setText("重置");
-        } else if (taskType == SpConstants.TASK_FINISHED) {
+        } else if (taskType.equals(SpConstants.TASK_FINISHED)) {
             submitBtn.setText("清除");
         }
         addBtn.setOnClickListener(new View.OnClickListener() {
