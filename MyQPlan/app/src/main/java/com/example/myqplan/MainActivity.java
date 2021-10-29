@@ -17,6 +17,7 @@ import com.example.myqplan.adpter.MainRvAdapter;
 import com.example.myqplan.base.BaseActivity;
 import com.example.myqplan.cache.TaskPoolCache;
 import com.example.myqplan.constants.SpConstants;
+import com.example.myqplan.enity.Task;
 import com.example.myqplan.enity.TaskPool;
 import com.example.myqplan.utils.MyItemTouchHelper;
 import com.example.myqplan.utils.SpUtils;
@@ -32,9 +33,10 @@ public class MainActivity extends BaseActivity {
 
     private List<TaskPool> taskPools;
 
-    RecyclerView.Adapter adapter;
+    MainRvAdapter adapter;
 
     ItemTouchHelper helper;
+
 
     @Override
     protected void getContent() {
@@ -87,12 +89,13 @@ public class MainActivity extends BaseActivity {
         }
 
         TaskPoolCache.getInstance().setList(taskPools);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new MainRvAdapter(MainActivity.this, taskPools);
-        recyclerView.setAdapter(adapter);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+//        recyclerView.setLayoutManager(layoutManager);
+//        adapter = new MainRvAdapter(MainActivity.this, taskPools);
+//        recyclerView.setAdapter(adapter);
+        initRv();
 
-//        setHelper();
+        setHelper();
     }
 
     private void setHelper() {
@@ -118,6 +121,10 @@ public class MainActivity extends BaseActivity {
                     }
                 }
                 adapter.notifyItemMoved(pre, cur);
+                //todo 将这个变化，写入SP 还需要通知Rv的adapter list发生了变化
+                updateSp();
+//                adapter.setList(taskPools);
+
                 return true;
             }
 
@@ -130,6 +137,7 @@ public class MainActivity extends BaseActivity {
             public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
                 viewHolder.itemView.setBackgroundColor(0);
+                initRv();
             }
 
             @Override
@@ -141,6 +149,32 @@ public class MainActivity extends BaseActivity {
             }
         });
         helper.attachToRecyclerView(recyclerView);
+    }
+
+    private void initRv() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new MainRvAdapter(MainActivity.this, taskPools);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void updateSp() {
+        if (taskPools == null)
+            return;
+        //todo 把新添加的项写入sp
+        StringBuilder sb = new StringBuilder();
+        if (taskPools.size() == 0) {
+            SpUtils.addToSp(SpConstants.TASK_POOL_NAMES, "");
+            return;
+        }
+        for (int i = 0; i < taskPools.size() - 1; i++) {
+            TaskPool taskPool = taskPools.get(i);
+            sb.append(taskPool.getName()).append("&");
+        }
+        TaskPool taskPool = taskPools.get(taskPools.size() - 1);
+        sb.append(taskPool.getName());
+        //todo 其实sp的apply可以在离开页面时提交？
+        SpUtils.addToSp(SpConstants.TASK_POOL_NAMES, sb.toString());
     }
 
 }

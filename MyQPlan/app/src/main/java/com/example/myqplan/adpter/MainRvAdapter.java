@@ -24,6 +24,10 @@ public class MainRvAdapter extends RecyclerView.Adapter<MainRvAdapter.ViewHolder
     private List<TaskPool> list;
     private Context context;
 
+    public void setList(List<TaskPool> list) {
+        this.list = list;
+    }
+
     public MainRvAdapter(Context context, List<TaskPool> list) {
         this.list = list;
         this.context = context;
