@@ -104,14 +104,19 @@ public class TaskPoolFragment extends Fragment {
             public void onClick(View view) {
 
                 String newTaskName = editText.getText().toString();
-                if (!TextUtils.isEmpty(newTaskName)) {
-                    list.add(new Task(newTaskName, false));
-                    editText.setText("");
-                    KeyBoardUtils.closeKeyBoard(context);
-                    updateSp();
-                } else {
-                    Toast.makeText(context, "输入框不能为空！", Toast.LENGTH_SHORT).show();
-                }
+//                if (!TextUtils.isEmpty(newTaskName)) {
+//                    list.add(new Task(newTaskName, false));
+//                    editText.setText("");
+//                    KeyBoardUtils.closeKeyBoard(context);
+//                    updateSp();
+//                } else {
+//                    Toast.makeText(context, "输入框不能为空！", Toast.LENGTH_SHORT).show();
+//                }
+                list.add(new Task(newTaskName, false));
+                editText.setText("");
+                KeyBoardUtils.closeKeyBoard(context);
+                updateSp();
+                adapter.notifyDataSetChanged();
 
             }
         });
