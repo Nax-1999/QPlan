@@ -14,6 +14,7 @@ import com.example.myqplan.constants.Constants;
 import com.example.myqplan.constants.SpConstants;
 import com.example.myqplan.fragment.TaskPoolFragment;
 import com.example.myqplan.utils.KeyBoardUtils;
+import com.example.myqplan.utils.SpUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,19 +43,27 @@ public class TaskPoolActivity extends BaseActivity {
     @Override
     protected void initData() {
         index = getIntent().getIntExtra(Constants.MAIN_RV_INDEX, 0);
-        taskPoolName = TaskPoolCache.getInstance().getList().get(index).getName();
+//        taskPoolName = TaskPoolCache.getInstance().getList().get(index).getName();
 
-        //TODO 添加任务fragments
         list = new LinkedList<>();
-        list.add(new TaskPoolFragment(SpConstants.TASK_DAILY));
-        list.add(new TaskPoolFragment(SpConstants.TASK_UNDO));
-        list.add(new TaskPoolFragment(SpConstants.TASK_READY));
-        list.add(new TaskPoolFragment(SpConstants.TASK_EXECUTE));
-        list.add(new TaskPoolFragment(SpConstants.TASK_REVIEW));
-        list.add(new TaskPoolFragment(SpConstants.TASK_FINISHED));
-        list.add(new TaskPoolFragment(SpConstants.TASK_BLOCKED));
-        list.add(new TaskPoolFragment(SpConstants.TASK_PATCH));
+        String s = SpUtils.getFromSp(SpConstants.TASK_POOL_NAMES);
+        if (!TextUtils.isEmpty(s)) {
+            String[] pools = s.split("&");
+            for (String str : pools) {
+                list.add(new TaskPoolFragment(str));
+            }
+        }
+        //TODO 添加任务fragments
+//        list.add(new TaskPoolFragment(SpConstants.TASK_DAILY));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_UNDO));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_READY));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_EXECUTE));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_REVIEW));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_FINISHED));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_BLOCKED));
+//        list.add(new TaskPoolFragment(SpConstants.TASK_PATCH));
 
+        taskPoolName = list.get(index).getTaskType();
 
         viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @NonNull
@@ -80,7 +89,8 @@ public class TaskPoolActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 index = position;
-                taskPoolName = TaskPoolCache.getInstance().getList().get(index).getName();
+//                taskPoolName = TaskPoolCache.getInstance().getList().get(index).getName();
+                taskPoolName = list.get(position).getTaskType();
                 if (!TextUtils.isEmpty(taskPoolName))
                     taskPoolNameTv.setText(taskPoolName);
 

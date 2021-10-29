@@ -72,6 +72,10 @@ public class TaskPoolFragment extends Fragment {
 //
 //    }
 
+    public String getTaskType() {
+        return taskType;
+    }
+
     public TaskPoolFragment(String taskType) {
         this.taskType = taskType;
 
