@@ -279,6 +279,7 @@ public class TaskPoolFragment extends Fragment {
 
         initData();
         initRv();
+        initDate();
         return view;
     }
 
@@ -303,7 +304,7 @@ public class TaskPoolFragment extends Fragment {
                 list.add(new Task(s[0], Boolean.parseBoolean(s[1])));
             }
         }
-        initDate();
+//        initDate();
     }
 
     private void initDate() {
